@@ -6,10 +6,10 @@ export const Navbar = () => {
 		<nav className="navbar navbar-light bg-light">
 			<div className="container">
 				<Link to="/">
-					<span className="navbar-brand mb-0 h1">Nokia contact list</span>
+					<span className="navbar-brand mb-0 h1">Nokla; connecting people</span>
 				</Link>
 				<div className="ml-auto">
-					<Link to="/demo">
+					<Link to="/EditContact">
 						<button className="btn btn-success">Add new Contact!</button>
 					</Link>
 				</div>
