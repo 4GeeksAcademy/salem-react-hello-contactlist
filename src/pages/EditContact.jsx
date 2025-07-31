@@ -1,9 +1,12 @@
-import { Link } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 
-export const EditContact = ({ contact = {}, agendaSlug = "salem", onClose }) => {
-  const { dispatch } = useGlobalReducer();
+export const EditContact = ({ agendaSlug = "salem" }) => {
+  const { contactId } = useParams();
+  const navigate = useNavigate();
+  const { store, dispatch } = useGlobalReducer();
+  const contact = contactId ? store.contacts?.find(c => c.id === parseInt(contactId)) || {} : {};
   const [form, setForm] = useState({
     name: contact.name || "",
     address: contact.address || "",
@@ -11,17 +14,15 @@ export const EditContact = ({ contact = {}, agendaSlug = "salem", onClose }) => 
     email: contact.email || ""
   });
 
-  const prevContactId = useRef(contact.id);
   useEffect(() => {
-    // Only reset form if contact id changes (edit) or contact is empty (create)
-    if (contact.id !== prevContactId.current) {
+    // Update form when contact changes (for editing existing contacts)
+    if (contact && contact.id) {
       setForm({
         name: contact.name || "",
         address: contact.address || "",
         phone: contact.phone || "",
         email: contact.email || ""
       });
-      prevContactId.current = contact.id;
     }
   }, [contact]);
 
@@ -67,7 +68,7 @@ export const EditContact = ({ contact = {}, agendaSlug = "salem", onClose }) => 
               dispatch({ type: "addContact", payload: result });
             }
             alert(`${contact.id ? "Updated" : "Created"} contact: ${JSON.stringify(result)}`);
-            if (onClose) onClose();
+            navigate("/");
           } else {
             alert(result?.msg || "Error saving contact");
           }
@@ -106,9 +107,7 @@ export const EditContact = ({ contact = {}, agendaSlug = "salem", onClose }) => 
           <input type="email" className="form-control" id="email" name="email" value={form.email} onChange={handleChange} placeholder="Enter email" />
         </div>
         <button type="submit" className="btn btn-primary">{contact.id ? "Update" : "Create"} Contact</button>
-        {onClose && (
-          <button type="button" className="btn btn-secondary ms-2" onClick={onClose}>Cancel</button>
-        )}
+        <Link to="/" className="btn btn-secondary ms-2">Cancel</Link>
       </form>
       <p className="mt-3">or</p>
       <Link to="/">

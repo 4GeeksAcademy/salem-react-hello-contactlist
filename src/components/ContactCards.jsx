@@ -1,32 +1,18 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import rigoBabyImg from '../assets/img/rigo-baby.jpg';
 import useGlobalReducer from '../hooks/useGlobalReducer';
-import { EditContact } from '../pages/EditContact';
 
 export default function ContactCards() {
+  const navigate = useNavigate();
   const { store, dispatch } = useGlobalReducer();
   const contacts = store.contacts || [];
   const [modalContactId, setModalContactId] = useState(null);
-  const [showEditContact, setShowEditContact] = useState(false);
-  const [editContactData, setEditContactData] = useState(null);
   const agendaSlug = "salem";
 
   useEffect(() => {
     fetchContacts();
   }, []);
-
-  if (showEditContact) {
-    return (
-      <EditContact
-        contact={editContactData}
-        onClose={() => setShowEditContact(false)}
-        onSave={() => {
-          fetchContacts();
-          setShowEditContact(false);
-        }}
-      />
-    );
-  }
 
 
   const fetchContacts = async () => {
@@ -49,9 +35,7 @@ export default function ContactCards() {
   };
 
   const handleEdit = id => {
-    const contact = contacts.find(c => c.id === id);
-    setEditContactData(contact || {});
-    setShowEditContact(true);
+    navigate(`/EditContact/${id}`);
   };
 
   const handleDelete = async id => {
@@ -62,6 +46,15 @@ export default function ContactCards() {
   
   return (
     <>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h2>Contacts</h2>
+        <button 
+          className="btn btn-success" 
+          onClick={() => navigate('/EditContact')}
+        >
+          Add New Contact
+        </button>
+      </div>
       <ul className="list-unstyled">
         {contacts.map(contact => (
           <li key={contact.id} className="container row p-3 mb-3 border rounded">
